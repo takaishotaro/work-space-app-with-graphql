@@ -12,7 +12,7 @@ const schema = require('./schema/schema');
 const app = express();
 
 // Replace with your mongoLab URI
-const MONGO_URI = '';
+const MONGO_URI = 'mongodb+srv://takaishotaro:3n4n7entp@auth.qzvix.mongodb.net/test?retryWrites=true&w=majority';
 
 // Mongoose's built in promise library is deprecated, replace it with ES2015 Promise
 mongoose.Promise = global.Promise;
@@ -20,6 +20,7 @@ mongoose.Promise = global.Promise;
 // Connect to the mongoDB instance and log a message
 // on success or failure
 mongoose.connect(MONGO_URI);
+
 mongoose.connection
     .once('open', () => console.log('Connected to MongoLab instance.'))
     .on('error', error => console.log('Error connecting to MongoLab:', error));
@@ -29,12 +30,13 @@ mongoose.connection
 // the cookie and modifies the request object to indicate which user made the request
 // The cookie itself only contains the id of a session; more data about the session
 // is stored inside of MongoDB.
+
 app.use(session({
   resave: true,
   saveUninitialized: true,
   secret: 'aaabbbccc',
   store: new MongoStore({
-    url: MONGO_URI,
+    mongooseConnection: mongoose.connection,
     autoReconnect: true
   })
 }));
