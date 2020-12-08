@@ -1,7 +1,7 @@
 const graphql = require('graphql')
 const {
     GraphQLObjectType,
-    GraphQLString
+    GraphQLString,
 } = graphql
 const AuthService = require('../services/auth')
 
