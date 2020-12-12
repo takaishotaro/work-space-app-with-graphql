@@ -2,6 +2,7 @@ const {
     GraphQLObjectType,
     GraphQLString,
     GraphQLInt,
+    GraphQLInputObjectType
 } = require('graphql')
     
 const AuthService = require('../services/auth')
@@ -11,6 +12,7 @@ const Customer = mongoose.model('customer')
 
 const UserType = require('./types/user_type')
 const CustomerType = require('./types/customer_type')
+const ReservationInputType = require('./types/reservation_input')
 
 const mutation = new GraphQLObjectType({
     name:'Mutation',
@@ -49,21 +51,17 @@ const mutation = new GraphQLObjectType({
                 email: { type: GraphQLString },
                 name: { type: GraphQLString },
                 phoneNumber: { type: GraphQLString },
-                totalPrice: { type: GraphQLInt },
-                date: { type: GraphQLString },
-                startAt: { type: GraphQLString },
-                finishAt: { type: GraphQLString }
+                reservation: { type: ReservationInputType}
             },
             resolve(parentValue, {
-                email, name, phoneNumber, totalPrice, date, startAt, finishAt
+                email, name, phoneNumber, reservation
             }, req ){
-                //utcに変換します。formatは”2020-12-09 10:00:02”
                 startAt = new Date(`${date} ${startAt}`)
                 finishAt = new Date(`${date} ${finishAt}`)
                 date = new Date(date)
                 
                 return (new Customer({ 
-                    email, name, phoneNumber, date,　startAt, finishAt,totalPrice 
+                    email, name, phoneNumber, reservation
                 })).save()
 
 

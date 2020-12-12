@@ -6,12 +6,8 @@ const {
     GraphQLInt,
     GraphQLBoolean
 } = graphql
-const graphqlIsoDate = require('graphql-iso-date')
-const {
-    GraphQLDate,
-    GraphQLTime,
-    GraphQLDateTime
-} = graphqlIsoDate
+const mongoose = require('mongoose')
+const Customer = mongoose.model('customer')
 
 const CustomerType = new GraphQLObjectType({
     name: 'CustomerType',
@@ -20,27 +16,16 @@ const CustomerType = new GraphQLObjectType({
         email: { type: GraphQLString },
         name: { type: GraphQLString },
         phoneNumber: { type: GraphQLString },
-        date: { 
-            type: GraphQLString,
-            resolve(parent, args, ctx, info){
-                return parent.date.toLocaleDateString({ timeZone: 'Asia/Tokyo' })
+        reservation: { 
+            type: require('./reservation_type'),
+            resolve(parentValue){
+                return Customer.findById(parentValue).populate('reservation')
+                    .then(res => {
+                        console.log(res)
+                        return res.reservation
+                    });
             }
-        },
-        startAt: { 
-            type: GraphQLString,
-            resolve(parent, args, ctx, info){
-                return parent.startAt.toLocaleString({ timeZone: 'Asia/Tokyo' })
-            }
-        },
-        finishAt: { 
-            type: GraphQLString,
-            resolve(parent, args, ctx, info){
-                return parent.finishAt.toLocaleString({ timeZone: 'Asia/Tokyo' })
-            }
-        },
-        totalPrice: { type: GraphQLInt },
-        paymentStatus: { type: GraphQLBoolean },
-        usingStatus: { type: GraphQLString }
+        }
     }
 })
 
