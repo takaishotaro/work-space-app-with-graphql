@@ -1,11 +1,27 @@
 const mongoose = require('mongoose')
-const { isBefore, isAfter } = require('validator')
+const { isBefore, isAfter, isEmail } = require('validator')
 const Schema = mongoose.Schema;
 
 const ReservationSchema = new Schema({
-    customer: {
-        type: Schema.Types.ObjectId,
-        ref: 'customer'
+    name: {
+        type: String,
+        required: true,
+        trim:true
+    },
+    email: {
+        type: String,
+        required: true,
+        trim:true,
+        lowercase:true,
+        validate(value){
+            if(!isEmail(value)){
+                throw new Error('無効なメールアドレスです。')
+            }
+        }
+    },
+    phoneNumber: {
+        type: Number,
+        required: true
     },
     plan: {
         type: Schema.Types.ObjectId,

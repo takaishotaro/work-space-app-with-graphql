@@ -10,14 +10,13 @@ const Reservation = mongoose.model('reservation')
 const ReservationInputType = new GraphQLInputObjectType({
     name: 'ReservationInputType',
     fields: {
-        id: { type: GraphQLID },
         customer: { type: GraphQLID },
         plan: { type: GraphQLID },
         date: { 
             type: GraphQLString,
-            // resolve(parent, args, ctx, info){
-            //     return new Date(parent.date)
-            // }
+            resolve(parent, {date}, ctx, info){
+                return new Date(date)
+            }
         },
         startAt: { 
             type: GraphQLString,

@@ -3,7 +3,8 @@ const {
     GraphQLObjectType, GraphQLString, GraphQLID, GraphQLInt,
     GraphQLBoolean, GraphQLEnumType
 } = graphql
-const PlanType = require('./plan_type')
+const mongoose = require('mongoose')
+const Reservation = mongoose.model('reservation')
 
 const UsingStatusType = new GraphQLEnumType({
     name: 'UsingStatusType',
@@ -18,20 +19,13 @@ const ReservationType = new GraphQLObjectType({
     name: 'ReservationType',
     fields: {
         id: { type: GraphQLID },
-        customer: { 
-            type: require('./customer_type'),
-            resolve(parentValue){
-                return Reservation.findById(parentValue.id).populate('customer')
-                    .then(res => {
-                        console.log(res)
-                        return res.customer
-                    });
-            }
-        },
+        email: { type: GraphQLString },
+        name: { type: GraphQLString },
+        phoneNumber: { type: GraphQLString },
         plan: { 
             type: require('./plan_type'),
             resolve(parentValue){
-                return Reservation.findById(parentValue).populate('plan')
+                return Reservation.findById(parentValue.id).populate('plan')
                     .then(res => {
                         console.log(res)
                         return res.plan

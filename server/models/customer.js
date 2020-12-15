@@ -22,10 +22,6 @@ const CustomerSchema = new Schema({
     phoneNumber: {
         type: Number,
         required: true
-    },
-    reservation: {
-        type: Schema.Types.ObjectId,
-        ref: 'reservation'
     }
   },{
     timestamps: true

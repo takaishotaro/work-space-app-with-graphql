@@ -19,16 +19,16 @@ const RootQueryType = new GraphQLObjectType({
         return req.user;
       }
     },
-    customers: {
-      type: new GraphQLList(CustomerType),
-      resolve(parentValue, args, req){
-        return Customer.find({})
-      }
-    },
     reservations: {
       type: new GraphQLList(ReservationType),
       resolve(parentValue, args, req){
         return Reservation.find({})
+      }
+    },
+    reservation: {
+      type: ReservationType,
+      resolve(parent, args, req){
+        return Reservation.findOne({ id: args.id })
       }
     },
     plans: {

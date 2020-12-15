@@ -2,17 +2,18 @@ const {
     GraphQLObjectType,
     GraphQLString,
     GraphQLInt,
+    GraphQLID,
+    GraphQLBoolean,
     GraphQLInputObjectType
 } = require('graphql')
     
 const AuthService = require('../services/auth')
 
 const mongoose = require('mongoose')
-const Customer = mongoose.model('customer')
+const Reservation = mongoose.model('reservation')
+const Plan = mongoose.model('plan')
 
 const UserType = require('./types/user_type')
-const CustomerType = require('./types/customer_type')
-const ReservationInputType = require('./types/reservation_input')
 
 const mutation = new GraphQLObjectType({
     name:'Mutation',
@@ -45,26 +46,54 @@ const mutation = new GraphQLObjectType({
                 return AuthService.login({ email, password, req })
             }
         },
-        addCustomer: {
-            type: CustomerType,
+        addReservation: {
+            type: require('./types/reservation_type'),
             args: {
                 email: { type: GraphQLString },
                 name: { type: GraphQLString },
                 phoneNumber: { type: GraphQLString },
-                reservation: { type: ReservationInputType}
+                planId: { type: GraphQLID },
+                date: { type: GraphQLString },
+                startAt: { type: GraphQLString },
+                finishAt: { type: GraphQLString },
+                totalPrice: { type: GraphQLInt }
             },
-            resolve(parentValue, {
-                email, name, phoneNumber, reservation
+            async resolve(parentValue, {
+                email, name, phoneNumber, planId, date, startAt, finishAt, totalPrice
             }, req ){
                 startAt = new Date(`${date} ${startAt}`)
                 finishAt = new Date(`${date} ${finishAt}`)
                 date = new Date(date)
+
+                const plan = await Plan.findById(planId)
                 
-                return (new Customer({ 
-                    email, name, phoneNumber, reservation
+                return (new Reservation({ 
+                    email, name, phoneNumber, plan,
+                    date, startAt, finishAt, totalPrice
                 })).save()
 
+            }
+        },
+        addPlan: {
+            type: require('./types/plan_type'),
+            args: {
+                planName: { type: GraphQLString },
+                dynamicPricing: { type: GraphQLBoolean },
+                pricePerHour: { type: GraphQLInt },
+                staticPrice: { type: GraphQLInt }
+            },
+            resolve(parent, {planName, dynamicPricing, pricePerHour, staticPrice}){
+                if(dynamicPricing){
+                    if( pricePerHour == null ){
+                        throw new Error('”1時間あたりの価格”が未入力です。')
+                    }
+                } else {
+                    if( staticPrice == null ){
+                        throw new Error('"1日の価格”が未入力です。')
+                    }
+                }
 
+                return (new Plan({ planName, dynamicPricing, pricePerHour, staticPrice })).save()
             }
         }
     }

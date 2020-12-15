@@ -15,7 +15,7 @@ const PlanType = new GraphQLObjectType({
         dynamicPricing: { type: GraphQLBoolean },
         pricePerHour: { type: GraphQLInt },
         staticPrice: { type: GraphQLInt }
-    }
+    },
 })
 
 module.exports = PlanType
