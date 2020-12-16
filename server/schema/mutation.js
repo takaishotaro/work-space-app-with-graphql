@@ -4,7 +4,6 @@ const {
     GraphQLInt,
     GraphQLID,
     GraphQLBoolean,
-    GraphQLInputObjectType
 } = require('graphql')
     
 const AuthService = require('../services/auth')
@@ -14,6 +13,7 @@ const Reservation = mongoose.model('reservation')
 const Plan = mongoose.model('plan')
 
 const UserType = require('./types/user_type')
+const { ReservationType, UsingStatusType } = require('./types/reservation_type')
 
 const mutation = new GraphQLObjectType({
     name:'Mutation',
@@ -47,7 +47,7 @@ const mutation = new GraphQLObjectType({
             }
         },
         addReservation: {
-            type: require('./types/reservation_type'),
+            type: ReservationType,
             args: {
                 email: { type: GraphQLString },
                 name: { type: GraphQLString },
@@ -71,7 +71,16 @@ const mutation = new GraphQLObjectType({
                     email, name, phoneNumber, plan,
                     date, startAt, finishAt, totalPrice
                 })).save()
-
+            }
+        },
+        editReservation: {
+            type: ReservationType,
+            args: {
+                paymentStatus: { type: GraphQLBoolean },
+                usingStatus: { type: UsingStatusType }
+            },
+            async resolve(parentValue, { paymentStatus, usingStatus }, req ){                
+                return Reservation.findByIdAndUpdate(id, { paymentStatus, usingStatus })
             }
         },
         addPlan: {
@@ -86,16 +95,33 @@ const mutation = new GraphQLObjectType({
             },
             resolve(parent, {planName, dynamicPricing, pricePerHour, staticPrice, maxPrice, minHour}){
                 if(dynamicPricing){
-                    if( pricePerHour == null ){
-                        throw new Error('”1時間あたりの価格”が未入力です。')
-                    }
+                    if(!pricePerHour){throw new Error('”1時間あたりの価格”が未入力です。')}
                 } else {
-                    if( staticPrice == null ){
-                        throw new Error('"1日の価格”が未入力です。')
-                    }
+                    if(!staticPrice){throw new Error('"1日の価格”が未入力です。')}
                 }
-
                 return (new Plan({ planName, dynamicPricing, pricePerHour, staticPrice, maxPrice, minHour })).save()
+            }
+        },
+        editPlan: {
+            type: require('./types/plan_type'),
+            args: {
+                id:{ type: GraphQLID },
+                planName: { type: GraphQLString },
+                dynamicPricing: { type: GraphQLBoolean },
+                pricePerHour: { type: GraphQLInt },
+                maxPrice:{ type: GraphQLInt },
+                minHour: { type: GraphQLInt },
+                staticPrice: { type: GraphQLInt }
+            },
+            resolve(parent, {id, planName, dynamicPricing, pricePerHour, staticPrice, maxPrice, minHour}){
+                if(dynamicPricing){
+                    if(!pricePerHour){throw new Error('”1時間あたりの価格”が未入力です。')}
+                } else {
+                    if(!staticPrice){throw new Error('"1日の価格”が未入力です。')}
+                }
+                return Plan.findByIdAndUpdate(id,{
+                    planName, dynamicPricing, pricePerHour, staticPrice, maxPrice, minHour
+                })
             }
         }
     }

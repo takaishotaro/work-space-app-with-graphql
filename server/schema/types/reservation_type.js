@@ -56,4 +56,4 @@ const ReservationType = new GraphQLObjectType({
     }
 })
 
-module.exports = ReservationType
+module.exports = {ReservationType, UsingStatusType}

@@ -2,7 +2,7 @@ const graphql = require('graphql');
 const { GraphQLObjectType, GraphQLID, GraphQLList, GraphQLString } = graphql;
 const UserType = require('./user_type')
 const CustomerType = require('./customer_type')
-const ReservationType = require('./reservation_type')
+const ReservationType = require('./reservation_type').ReservationType
 const PlanType = require('./plan_type')
 
 const mongoose = require('mongoose')
