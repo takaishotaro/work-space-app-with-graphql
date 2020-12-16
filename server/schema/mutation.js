@@ -80,9 +80,11 @@ const mutation = new GraphQLObjectType({
                 planName: { type: GraphQLString },
                 dynamicPricing: { type: GraphQLBoolean },
                 pricePerHour: { type: GraphQLInt },
+                maxPrice:{ type: GraphQLInt },
+                minHour: { type: GraphQLInt },
                 staticPrice: { type: GraphQLInt }
             },
-            resolve(parent, {planName, dynamicPricing, pricePerHour, staticPrice}){
+            resolve(parent, {planName, dynamicPricing, pricePerHour, staticPrice, maxPrice, minHour}){
                 if(dynamicPricing){
                     if( pricePerHour == null ){
                         throw new Error('”1時間あたりの価格”が未入力です。')
@@ -93,7 +95,7 @@ const mutation = new GraphQLObjectType({
                     }
                 }
 
-                return (new Plan({ planName, dynamicPricing, pricePerHour, staticPrice })).save()
+                return (new Plan({ planName, dynamicPricing, pricePerHour, staticPrice, maxPrice, minHour })).save()
             }
         }
     }

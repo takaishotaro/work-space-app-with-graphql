@@ -14,6 +14,8 @@ const PlanType = new GraphQLObjectType({
         planName: { type: GraphQLString },
         dynamicPricing: { type: GraphQLBoolean },
         pricePerHour: { type: GraphQLInt },
+        maxPrice: { type: GraphQLInt },
+        minHour: { type: GraphQLInt },
         staticPrice: { type: GraphQLInt }
     },
 })

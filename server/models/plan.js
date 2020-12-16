@@ -14,6 +14,14 @@ const PlanSchema = new Schema({
         type: Number,
         required: false
     },
+    maxPrice: {
+        type: Number,
+        required: true
+    },
+    minHour: {
+        type: Number,
+        required: true
+    },
     staticPrice: {
         type: Number,
         required: false

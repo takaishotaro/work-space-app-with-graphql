@@ -1,5 +1,5 @@
 const graphql = require('graphql');
-const { GraphQLObjectType, GraphQLID, GraphQLList } = graphql;
+const { GraphQLObjectType, GraphQLID, GraphQLList, GraphQLString } = graphql;
 const UserType = require('./user_type')
 const CustomerType = require('./customer_type')
 const ReservationType = require('./reservation_type')
@@ -21,8 +21,39 @@ const RootQueryType = new GraphQLObjectType({
     },
     reservations: {
       type: new GraphQLList(ReservationType),
-      resolve(parentValue, args, req){
-        return Reservation.find({})
+      args: {
+        customerQuery: { type: GraphQLString },
+        dateQuery: { type: GraphQLString }
+      },
+      resolve(parentValue, {customerQuery, dateQuery}, req){
+        if( customerQuery ){
+          return Reservation.find({
+            $or: [
+              {name : {$regex : customerQuery}} , 
+              {email : {$regex : customerQuery}},
+              {phoneNumber : {$regex : customerQuery}}
+            ]
+          })
+        } else if ( dateQuery ){
+          dateQuery = new Date(dateQuery)
+          return Reservation.find({ date: dateQuery })
+        } else if( customerQuery && dateQuery){
+          dateQuery = new Date(dateQuery)
+          return Reservation.find({
+            $and: [{
+              $or: [
+                {name : {$regex : customerQuery}} , 
+                {email : {$regex : customerQuery}},
+                {phoneNumber : {$regex : customerQuery}}
+              ]
+            },{
+              date: dateQuery
+            }
+          ]
+          })
+        } else {
+          return Reservation.find({})
+        }
       }
     },
     reservation: {
