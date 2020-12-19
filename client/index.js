@@ -8,6 +8,9 @@ import App from './components/App'
 import LoginForm from './components/LoginForm'
 import SignupForm from './components/SignupForm'
 import Dashbord from './components/Dashbord'
+import ReservationsList from './components/ReservationsList'
+import ReservationDetail from './components/ReservationDetail'
+
 import requireAuth from './components/RequireAuth'
 
 const networkInterface = createNetworkInterface({
@@ -30,6 +33,8 @@ const Root = () => {
           <Route path="login" component={LoginForm}></Route>
           <Route path="signup" component={SignupForm}></Route>
           <Route path="dashbord" component={requireAuth(Dashbord)}></Route>
+          <Route path="reservations" component={requireAuth(ReservationsList)}></Route>
+          <Route path="reservation/:id" component={requireAuth(ReservationDetail)}></Route>
         </Route>
       </Router>
     </ApolloProvider>

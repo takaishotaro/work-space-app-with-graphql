@@ -13,7 +13,7 @@ const Reservation = mongoose.model('reservation')
 const Plan = mongoose.model('plan')
 
 const UserType = require('./types/user_type')
-const { ReservationType, UsingStatusType } = require('./types/reservation_type')
+const { ReservationType, UsingStatusType, ApprovalType } = require('./types/reservation_type')
 
 const mutation = new GraphQLObjectType({
     name:'Mutation',
@@ -76,11 +76,13 @@ const mutation = new GraphQLObjectType({
         editReservation: {
             type: ReservationType,
             args: {
+                id: { type: GraphQLID },
                 paymentStatus: { type: GraphQLBoolean },
-                usingStatus: { type: UsingStatusType }
+                usingStatus: { type: UsingStatusType },
+                approval: { type: ApprovalType }
             },
-            async resolve(parentValue, { paymentStatus, usingStatus }, req ){                
-                return Reservation.findByIdAndUpdate(id, { paymentStatus, usingStatus })
+            async resolve(parentValue, { id, paymentStatus, usingStatus, approval }, req ){                
+                return Reservation.findByIdAndUpdate(id, { paymentStatus, usingStatus, approval })
             }
         },
         addPlan: {

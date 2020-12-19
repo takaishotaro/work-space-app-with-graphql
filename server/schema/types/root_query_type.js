@@ -1,12 +1,10 @@
 const graphql = require('graphql');
-const { GraphQLObjectType, GraphQLID, GraphQLList, GraphQLString } = graphql;
+const { GraphQLObjectType, GraphQLID, GraphQLList, GraphQLString, GraphQLBoolean } = graphql;
 const UserType = require('./user_type')
-const CustomerType = require('./customer_type')
-const ReservationType = require('./reservation_type').ReservationType
+const {ReservationType, UsingStatusType, ApprovalType} = require('./reservation_type')
 const PlanType = require('./plan_type')
 
 const mongoose = require('mongoose')
-const Customer = mongoose.model('customer')
 const Reservation = mongoose.model('reservation')
 const Plan = mongoose.model('plan')
 
@@ -23,21 +21,13 @@ const RootQueryType = new GraphQLObjectType({
       type: new GraphQLList(ReservationType),
       args: {
         customerQuery: { type: GraphQLString },
-        dateQuery: { type: GraphQLString }
+        dateQuery: { type: GraphQLString },
+        usingStatusQuery: { type: UsingStatusType },
+        paymentStatusQuery: { type: GraphQLBoolean },
+        approvalQuery: { type: ApprovalType }
       },
-      resolve(parentValue, {customerQuery, dateQuery}, req){
-        if( customerQuery ){
-          return Reservation.find({
-            $or: [
-              {name : {$regex : customerQuery}} , 
-              {email : {$regex : customerQuery}},
-              {phoneNumber : {$regex : customerQuery}}
-            ]
-          })
-        } else if ( dateQuery ){
-          dateQuery = new Date(dateQuery)
-          return Reservation.find({ date: dateQuery })
-        } else if( customerQuery && dateQuery){
+      resolve(parentValue, {customerQuery, dateQuery, usingStatusQuery, paymentStatusQuery, approvalQuery}, req){
+        if( customerQuery && dateQuery && usingStatusQuery && paymentStatusQuery && approval){
           dateQuery = new Date(dateQuery)
           return Reservation.find({
             $and: [{
@@ -51,6 +41,18 @@ const RootQueryType = new GraphQLObjectType({
             }
           ]
           })
+        } 
+        if( customerQuery ){
+          return Reservation.find({
+            $or: [
+              {name : {$regex : customerQuery}} , 
+              {email : {$regex : customerQuery}},
+              {phoneNumber : {$regex : customerQuery}}
+            ]
+          })
+        } else if ( dateQuery ){
+          dateQuery = new Date(dateQuery)
+          return Reservation.find({ date: dateQuery })
         } else {
           return Reservation.find({})
         }
@@ -58,8 +60,11 @@ const RootQueryType = new GraphQLObjectType({
     },
     reservation: {
       type: ReservationType,
-      resolve(parent, args, req){
-        return Reservation.findOne({ id: args.id })
+      args: {
+        id: { type: GraphQLID }
+      },
+      resolve(parent, {id}, req){
+        return Reservation.findById(id)
       }
     },
     plans: {

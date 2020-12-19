@@ -15,6 +15,15 @@ const UsingStatusType = new GraphQLEnumType({
     }
   });
 
+  const ApprovalType = new GraphQLEnumType({
+    name: 'ApprovalType',
+    values: {
+      Pending: { value: "承認待ち" },
+      Approved: { value: "承認済み" },
+      Rejected: { value: "却下済み" }
+    }
+  });
+
 const ReservationType = new GraphQLObjectType({
     name: 'ReservationType',
     fields: {
@@ -52,8 +61,21 @@ const ReservationType = new GraphQLObjectType({
         },
         totalPrice: { type: GraphQLInt },
         paymentStatus: { type: GraphQLBoolean },
-        usingStatus: { type: UsingStatusType }
+        usingStatus: { type: UsingStatusType },
+        approval: { type: ApprovalType },
+        createdAt: { 
+            type: GraphQLString,
+            resolve(parent, args, ctx, info){
+                return parent.createdAt.toLocaleString({ timeZone: 'Asia/Tokyo' })
+            }
+        },
+        updatedAt: { 
+            type: GraphQLString,
+            resolve(parent, args, ctx, info){
+                return parent.updatedAt.toLocaleString({ timeZone: 'Asia/Tokyo' })
+            }
+        }
     }
 })
 
-module.exports = {ReservationType, UsingStatusType}
+module.exports = {ReservationType, UsingStatusType, ApprovalType}

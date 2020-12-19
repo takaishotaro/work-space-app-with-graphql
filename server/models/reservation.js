@@ -76,6 +76,10 @@ const ReservationSchema = new Schema({
     usingStatus: {
         type: String,
         default: '未到着'
+    },
+    approval: {
+        type: String,
+        default: '承認待ち'
     }
   },{
     timestamps: true
