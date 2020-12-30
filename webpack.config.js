@@ -19,6 +19,12 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: 'client/index.html'
-    })
-  ]
+    }),
+    // fix "process is not defined" error:
+    // (do "npm install process" before running the build)
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+    }),
+  ],
+  devtool: 'cheap-module-eval-source-map',
 };

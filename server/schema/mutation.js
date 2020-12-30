@@ -14,6 +14,7 @@ const Plan = mongoose.model('plan')
 
 const UserType = require('./types/user_type')
 const { ReservationType, UsingStatusType, ApprovalType } = require('./types/reservation_type')
+const { sendApprovalEmail,sendBookingConfirmEmail,SendRejectEmail} = require('../services/mail')
 
 const mutation = new GraphQLObjectType({
     name:'Mutation',
@@ -66,7 +67,12 @@ const mutation = new GraphQLObjectType({
                 date = new Date(date)
 
                 const plan = await Plan.findById(planId)
-                
+
+                sendBookingConfirmEmail(
+                    email, name, plan, date.toLocaleDateString({ timeZone: 'Asia/Tokyo' }), 
+                    startAt.toLocaleString({ timeZone: 'Asia/Tokyo' }), finishAt.toLocaleString({ timeZone: 'Asia/Tokyo' }), totalPrice
+                )
+    
                 return (new Reservation({ 
                     email, name, phoneNumber, plan,
                     date, startAt, finishAt, totalPrice
@@ -81,8 +87,40 @@ const mutation = new GraphQLObjectType({
                 usingStatus: { type: UsingStatusType },
                 approval: { type: ApprovalType }
             },
-            async resolve(parentValue, { id, paymentStatus, usingStatus, approval }, req ){                
+            async resolve(parentValue, { id, paymentStatus, usingStatus, approval }, req ){  
                 return Reservation.findByIdAndUpdate(id, { paymentStatus, usingStatus, approval })
+            }
+        },
+        approveReservation: {
+            type: ReservationType,
+            args: {
+                id: { type: GraphQLID },
+                approval: { type: ApprovalType }
+            },
+            async resolve(parentValue, { id, approval }, req ){
+                return Reservation.findByIdAndUpdate(id, { approval })
+                    .then(async(res) => {
+                        console.log(res)
+                        const plan = await Plan.findById(res.plan)
+                        sendApprovalEmail(res.email, res.name, plan, res.date, res.startAt, res.finishAt, res.totalPrice)
+                        return res
+                    }).catch(e => console.log(e))
+            }
+        },
+        rejectReservation: {
+            type: ReservationType,
+            args: {
+                id: { type: GraphQLID },
+                approval: { type: ApprovalType }
+            },
+            async resolve(parentValue, { id, approval }, req ){
+                return Reservation.findByIdAndUpdate(id, { approval })
+                    .then(async(res) => {
+                        console.log(res)
+                        const plan = await Plan.findById(res.plan)
+                        sendApprovalEmail(res.email, res.name, plan, res.date, res.startAt, res.finishAt, res.totalPrice)
+                        return res
+                    }).catch(e => console.log(e))
             }
         },
         addPlan: {

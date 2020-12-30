@@ -13,6 +13,7 @@ import ReservationDetail from './components/ReservationDetail'
 import Booking from './components/Booking'
 
 import requireAuth from './components/RequireAuth'
+import BookingConfirm from './components/BookingConfirm';
 
 const networkInterface = createNetworkInterface({
   uri:  '/graphql',
@@ -34,6 +35,7 @@ const Root = () => {
           <Route path="login" component={LoginForm}></Route>
           <Route path="signup" component={SignupForm}></Route>
           <Route path="booking" component={Booking}></Route>
+          <Route path="booking/confirm" component={BookingConfirm}></Route>
           <Route path="dashbord" component={requireAuth(Dashbord)}></Route>
           <Route path="reservations" component={requireAuth(ReservationsList)}></Route>
           <Route path="reservation/:id" component={requireAuth(ReservationDetail)}></Route>

@@ -32,8 +32,11 @@ const TotalPriceCulcuration = ( plan , startAt, finishAt) => {
 
 console.log(TotalPriceCulcuration( plan, dateA, dateB))
 
+console.log(new Date('2020/12/9 20:30'))
+
 //console.log(a.toLocaleString({ timeZone: 'Asia/Tokyo' }))
 
 
 
 //node server/schema/playing.js 
+
