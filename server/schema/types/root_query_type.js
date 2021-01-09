@@ -72,6 +72,15 @@ const RootQueryType = new GraphQLObjectType({
       resolve(parentValue, args, req){
         return Plan.find({})
       }
+    },
+    plan: {
+      type: PlanType,
+      args: {
+        id: { type: GraphQLID }
+      },
+      resolve(parentValue, { id }, req){
+        return Plan.findById(id)
+      }
     }
   }
 });

@@ -108,7 +108,7 @@ class ReservationsDeatil extends Component {
                         {approval=="Rejected" && <td>却下済み</td>}
                         <td>
                             <button 
-                                className="waves-effect waves-light btn" 
+                                className="waves-effect waves-light btn button-margin-right" 
                                 onClick={() => this.onApproved(id,approval,usingStatus,paymentStatus)}
                                 disabled={approval=="Approved"||approval=="Rejected"}
                             >

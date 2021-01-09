@@ -8,10 +8,8 @@ const passportConfig = require('./services/auth');
 const MongoStore = require('connect-mongo')(session);
 const schema = require('./schema/schema');
 
-// Create a new Express application
 const app = express();
 
-// Replace with your mongoLab URI
 const MONGO_URI = 'mongodb+srv://takaishotaro:mymongopass@cluster0.8jo2j.mongodb.net/test?retryWrites=true&w=majority';
 
 // Mongoose's built in promise library is deprecated, replace it with ES2015 Promise

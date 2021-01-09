@@ -14,6 +14,9 @@ import Booking from './components/Booking'
 
 import requireAuth from './components/RequireAuth'
 import BookingConfirm from './components/BookingConfirm';
+import PlansList from './components/PlansList';
+import PlanEdit from './components/PlanEdit';
+import AddPlan from './components/AddPlan';
 
 const networkInterface = createNetworkInterface({
   uri:  '/graphql',
@@ -39,6 +42,9 @@ const Root = () => {
           <Route path="dashbord" component={requireAuth(Dashbord)}></Route>
           <Route path="reservations" component={requireAuth(ReservationsList)}></Route>
           <Route path="reservation/:id" component={requireAuth(ReservationDetail)}></Route>
+          <Route path="plans" component={requireAuth(PlansList)}></Route>
+          <Route path="plan/:id" component={requireAuth(PlanEdit)}></Route>
+          <Route path="addPlan" component={requireAuth(AddPlan)}></Route>
         </Route>
       </Router>
     </ApolloProvider>

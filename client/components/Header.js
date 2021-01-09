@@ -19,7 +19,12 @@ class Header extends Component {
 
         if (user) {
             return (
-                <li><a onClick={this.onLogoutClick.bind(this)}>Logout</a></li>
+                <div>
+                    <li><Link to="/reservations">予約一覧</Link></li>
+                    <li><Link to="/plans">プラン一覧</Link></li>
+                    <li><Link to="/addPlan">プランを追加</Link></li>
+                    <li><a onClick={this.onLogoutClick.bind(this)}>ログアウト</a></li>
+                </div>
             )
         } else {
             return (
@@ -38,7 +43,7 @@ class Header extends Component {
         return(
             <nav>
                 <div className="nav-wrapper">
-                    <Link to="/" className="brand-logo left">Home</Link>
+                    <Link to="/dashbord" className="brand-logo left">Home</Link>
                     <ul className="right">
                         {this.renderButtons()}
                     </ul>

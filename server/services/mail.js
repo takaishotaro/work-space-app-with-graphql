@@ -47,7 +47,7 @@ const sendApprovalEmail = (email, name, plan, date, startAt, finishAt, totalPric
     })
 }
 
-const SendRejectEmail = (email, name) => {
+const sendRejectEmail = (email, name) => {
     sgMail.send({
         to: email,
         from: 'takaishotaro326@gmail.com',
@@ -63,5 +63,5 @@ const SendRejectEmail = (email, name) => {
 module.exports = {
     sendBookingConfirmEmail,
     sendApprovalEmail,
-    SendRejectEmail
+    sendRejectEmail
 }

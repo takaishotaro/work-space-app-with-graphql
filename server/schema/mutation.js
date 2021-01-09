@@ -14,7 +14,7 @@ const Plan = mongoose.model('plan')
 
 const UserType = require('./types/user_type')
 const { ReservationType, UsingStatusType, ApprovalType } = require('./types/reservation_type')
-const { sendApprovalEmail,sendBookingConfirmEmail,SendRejectEmail} = require('../services/mail')
+const { sendApprovalEmail,sendBookingConfirmEmail, sendRejectEmail} = require('../services/mail')
 
 const mutation = new GraphQLObjectType({
     name:'Mutation',
@@ -87,40 +87,28 @@ const mutation = new GraphQLObjectType({
                 usingStatus: { type: UsingStatusType },
                 approval: { type: ApprovalType }
             },
-            async resolve(parentValue, { id, paymentStatus, usingStatus, approval }, req ){  
+            async resolve(parentValue, { id, paymentStatus, usingStatus, approval }, req ){
+                const reservation = await Reservation.findById(id)
+                if(reservation.approval=="承認待ち" && approval=="承認済み"){
+                    console.log("pendingからapprovedの条件分岐") 
+                    return Reservation.findByIdAndUpdate(id, { paymentStatus, usingStatus, approval })
+                        .then(async(res)=>{
+                            const plan = await Plan.findById(res.plan)
+                            await sendApprovalEmail(res.email, res.name, plan, res.date, res.startAt, res.finishAt, res.totalPrice)
+                            return res
+                        }).catch(e=>{
+                            throw new Error(e)
+                        })
+                }
+                if(reservation.approval.toString()=="承認待ち" && approval.toString()=="却下済み"){
+                    console.log("pendingからrejectedの条件分岐")
+                    await Reservation.findByIdAndUpdate(id, { paymentStatus, usingStatus, approval })
+                        .then(async(res)=>{
+                            sendRejectEmail(res.email, res.name)
+                            return res
+                        }).then
+                }
                 return Reservation.findByIdAndUpdate(id, { paymentStatus, usingStatus, approval })
-            }
-        },
-        approveReservation: {
-            type: ReservationType,
-            args: {
-                id: { type: GraphQLID },
-                approval: { type: ApprovalType }
-            },
-            async resolve(parentValue, { id, approval }, req ){
-                return Reservation.findByIdAndUpdate(id, { approval })
-                    .then(async(res) => {
-                        console.log(res)
-                        const plan = await Plan.findById(res.plan)
-                        sendApprovalEmail(res.email, res.name, plan, res.date, res.startAt, res.finishAt, res.totalPrice)
-                        return res
-                    }).catch(e => console.log(e))
-            }
-        },
-        rejectReservation: {
-            type: ReservationType,
-            args: {
-                id: { type: GraphQLID },
-                approval: { type: ApprovalType }
-            },
-            async resolve(parentValue, { id, approval }, req ){
-                return Reservation.findByIdAndUpdate(id, { approval })
-                    .then(async(res) => {
-                        console.log(res)
-                        const plan = await Plan.findById(res.plan)
-                        sendApprovalEmail(res.email, res.name, plan, res.date, res.startAt, res.finishAt, res.totalPrice)
-                        return res
-                    }).catch(e => console.log(e))
             }
         },
         addPlan: {

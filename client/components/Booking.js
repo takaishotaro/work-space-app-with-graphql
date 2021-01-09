@@ -40,8 +40,9 @@ class Booking extends Component {
         }
 
         if(
-            this.state.email==='', this.state.name==='', this.state.phoneNumber==='',
-            this.state.plan==={}, this.state.date==='', this.state.startAt==='', this.state.finishAt===''
+            this.state.email==='' || this.state.name===''|| this.state.phoneNumber===''||
+            this.state.plan==={} || this.state.date==='' || this.state.startAt===''|| this.state.finishAt===''||
+            this.state.planIndex+1>this.props.data.plans.length || this.state.planIndex<0
         ){
             return alert('必須項目が未入力です。')
         }
@@ -55,7 +56,7 @@ class Booking extends Component {
     totalPriceCulcurate(e){
         e.preventDefault()
 
-        if(this.state.planIndex+1>this.props.data.plans.length){
+        if(this.state.planIndex+1>this.props.data.plans.length || this.state.planIndex<0){
             return alert('プランを正しくご入力ください')
         } 
         this.setState({
