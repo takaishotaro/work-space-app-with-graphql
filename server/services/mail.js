@@ -1,6 +1,6 @@
 const sgMail = require('@sendgrid/mail')
 
-sgMail.setApiKey('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')
+sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 const sendBookingConfirmEmail = (email, name, plan, date, startAt, finishAt, totalPrice) => {
     sgMail.send({

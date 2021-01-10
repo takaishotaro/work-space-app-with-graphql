@@ -29,7 +29,7 @@ class AddPlan extends Component{
             }
         }).then(()=>{
             this.props.router.push({
-                pathname: "/plans",
+                pathname: "/plans"
             })
             alert('プランを追加しました。')
         }).catch((e)=> {
